@@ -1,5 +1,4 @@
 static final String[] semitones = { "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B" };
-static final boolean[] keyboard = { true, false, true, false, true, true, false, true, false, true, false, true };
 
 class Note {
   float frequency;
@@ -28,13 +27,5 @@ class Note {
   
   public String label() {
     return semitones[this.semitone] + this.octave;
-  }
-  
-  boolean isWhiteKey() {
-    return keyboard[this.pitch % 12];
-  }
-  
-  boolean isBlackKey() {
-    return !keyboard[this.pitch % 12];
   }
 }
