@@ -1,16 +1,28 @@
-void render() {
+void render(PGraphics pg) {
+   
   if(showUI) {
     renderWindowCurve();
     renderFFT();
     renderPeaks();
   }
-
+ 
+ pg.beginDraw();
+ pg.clear();
   for(int i=0;i<midibars.size();i++){
-    midibars.get(i).display();
+    midibars.get(i).display(pg);
     if(midibars.get(i).x>width){
       midibars.remove(midibars.get(i));
     }
   }
+  
+  
+  stroke(0);
+  for(int i=0;i<midibars.size()-1;i++){
+      line(midibars.get(i).x, midibars.get(i).normalizeY(midibars.get(i).y), midibars.get(i+1).x,  midibars.get(i).normalizeY(midibars.get(i+1).y)); 
+    
+  }
+  pg.endDraw();
+  
 }
 
 void renderPeaks() {
@@ -29,9 +41,9 @@ void renderPeaks() {
         color noteColor;
         
         if ( pcp[x][note.pitch % 12] == 1.0 ) {
-          noteColor = color(255, 100 * note.amplitude / 400, 0);
+          noteColor = color(100 * note.amplitude / 400);
         } else {
-          noteColor = color(0, 255 * note.amplitude / 400, 200);
+          noteColor = color(255 * note.amplitude / 400);
         }
         
         fill(red(noteColor)/4, green(noteColor)/4, blue(noteColor)/4);
@@ -53,10 +65,10 @@ void renderPeaks() {
       Note note = notes[frameNumber][i];
       
       fill(220);
-      text(note.label(), 24 + 1, height - ((note.pitch - keyboardStart) * keyHeight + keyHeight + 1));
+     // text(note.label(), 24 + 1, height - ((note.pitch - keyboardStart) * keyHeight + keyHeight + 1));
         
       fill(140);
-      text(note.label(), 24, height - ((note.pitch - keyboardStart) * keyHeight + keyHeight + 2));
+      //text(note.label(), 24, height - ((note.pitch - keyboardStart) * keyHeight + keyHeight + 2));
     }
   }
 }

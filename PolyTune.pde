@@ -7,6 +7,11 @@
 
 */
 
+
+PShader blurShader;
+PGraphics pgBars, pgBlurPass1, pgBlurPass2;
+final int MAX_BLUR_ITERATIONS = 3;
+
 import ddf.minim.*;
 import ddf.minim.analysis.*;
 import controlP5.*;
@@ -19,7 +24,7 @@ int ZERO_PAD_MULTIPLIER = 4; //	// zero padding adds interpolation resolution to
 
 int fftBufferSize = bufferSize * ZERO_PAD_MULTIPLIER;
 int fftSize = fftBufferSize/2;
-int PEAK_THRESHOLD = 50; // default peak threshold
+int PEAK_THRESHOLD = 10; // default peak threshold
 
 // MIDI notes span from 0 - 128, octaves -1 -> 9. Specify start and end for piano
 int keyboardStart = 12; // 12 is octave C0
@@ -34,7 +39,7 @@ Smooth smoother;
 
 FFT fft;
 
-boolean showUI = true;
+boolean showUI = false;
 
 float[] buffer = new float[fftBufferSize];
 float[] spectrum = new float[fftSize];
@@ -82,6 +87,7 @@ void setup() {
 	size(1200,800,P3D);
 	minim = new Minim(this);
 	controlP5 = new ControlP5(this);
+        controlP5.hide();
 	sampler = new Sampler();
 	window = new Window();
 	smoother = new Smooth();
@@ -91,11 +97,58 @@ void setup() {
 
 	midibars= new ArrayList<MIDIBar>();
 
+        blurShader = loadShader( "shaders/blur.glsl" );
+        blurShader.set( "blurSize", 9 );
+        blurShader.set( "sigma", 5.f );
+        pgBlurPass1 = createGraphics( width, height, P3D );
+        pgBlurPass1.noSmooth();
+        pgBlurPass2 = createGraphics( width, height, P3D );
+        pgBlurPass2.noSmooth();
+        
+        pgBars = createGraphics( width, height, P3D );
+        pgBars.noSmooth();
+        
+        float fov = PI/3.0;
+float cameraZ = (height/2.0) / tan(fov/2.0);
+perspective(fov, float(width)/float(height), 
+            cameraZ/10.0, cameraZ*10.0);
+        
 }
 
 void draw() {
-	background(40);
-  	sampler.draw();
+    background(255);
+    
+
+    //blurShader.set( "blur", map( mouseY, 0, height - 1, 0., 1. ) );
+    blurShader.set( "blur", 0.5 );
+    for ( int i = 0; i < MAX_BLUR_ITERATIONS; i++ )
+    {  
+          blurShader.set( "horizontalPass", 0 );
+          pgBlurPass1.beginDraw();
+          pgBlurPass1.shader( blurShader );
+          if ( i == 0 )
+          {
+            pgBlurPass1.image( pgBars, 0, 0 );
+          }
+          else
+          {
+            pgBlurPass1.image( pgBlurPass2, 0, 0 );
+          }
+          pgBlurPass1.endDraw();
+    
+          blurShader.set( "horizontalPass", 1 );
+          pgBlurPass2.beginDraw();
+          pgBlurPass2.shader( blurShader );
+          pgBlurPass2.image( pgBlurPass1, 0, 0 );
+          pgBlurPass2.endDraw();
+    }   
+    
+    image( pgBlurPass2, 0, 0 );
+    image( pgBars, 0, 0 );
+     //<>//
+    
+   
+    sampler.draw(pgBars);
 }
 
 void stop() {
@@ -121,11 +174,11 @@ void initSound() {
 void keyPressed() {
 	switch(keyCode) {
     	case RIGHT:
-      		PEAK_THRESHOLD += 5;
+      		PEAK_THRESHOLD += 1;
       		break;
       
     	case LEFT:
-      		PEAK_THRESHOLD -= 5;
+      		PEAK_THRESHOLD -= 1;
       		break;
   	}
 
@@ -138,27 +191,3 @@ void keyPressed() {
   		}
   	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
