@@ -11,6 +11,8 @@
 PShader blurShader;
 PGraphics pgBars, pgBlurPass1, pgBlurPass2;
 final int MAX_BLUR_ITERATIONS = 3;
+boolean useBlur = false;
+PImage back;
 
 import ddf.minim.*;
 import ddf.minim.analysis.*;
@@ -83,6 +85,12 @@ public static final int SLOPEUP = 4;
 public static final int SLOPEDOWN = 5;
 
 ArrayList<MIDIBar> midibars; 
+
+boolean sketchFullScreen() {
+  return true;
+}
+
+
 void setup() {
 	size(1200,800,P3D);
 	minim = new Minim(this);
@@ -109,45 +117,48 @@ void setup() {
         pgBars.noSmooth();
         
         float fov = PI/3.0;
-float cameraZ = (height/2.0) / tan(fov/2.0);
-perspective(fov, float(width)/float(height), 
+        float cameraZ = (height/2.0) / tan(fov/2.0);
+        perspective(fov, float(width)/float(height), 
             cameraZ/10.0, cameraZ*10.0);
-        
+        back = loadImage("er4.jpg");
 }
 
 void draw() {
-    background(255);
     
-
-    //blurShader.set( "blur", map( mouseY, 0, height - 1, 0., 1. ) );
-    blurShader.set( "blur", 0.5 );
-    for ( int i = 0; i < MAX_BLUR_ITERATIONS; i++ )
-    {  
-          blurShader.set( "horizontalPass", 0 );
-          pgBlurPass1.beginDraw();
-          pgBlurPass1.shader( blurShader );
-          if ( i == 0 )
-          {
-            pgBlurPass1.image( pgBars, 0, 0 );
-          }
-          else
-          {
-            pgBlurPass1.image( pgBlurPass2, 0, 0 );
-          }
-          pgBlurPass1.endDraw();
+    image(back, 0, 0);
     
-          blurShader.set( "horizontalPass", 1 );
-          pgBlurPass2.beginDraw();
-          pgBlurPass2.shader( blurShader );
-          pgBlurPass2.image( pgBlurPass1, 0, 0 );
-          pgBlurPass2.endDraw();
-    }   
+    if (useBlur)
+    {
+        blurShader.set( "blur", map( mouseY, 0, height - 1, 0., 1. ) );
+        //blurShader.set( "blur", 0.5 );
+        for ( int i = 0; i < MAX_BLUR_ITERATIONS; i++ )
+        {  
+              blurShader.set( "horizontalPass", 0 );
+              pgBlurPass1.beginDraw();
+              pgBlurPass1.shader( blurShader );
+              if ( i == 0 )
+              {
+                pgBlurPass1.image( pgBars, 0, 0 );
+              }
+              else
+              {
+                pgBlurPass1.image( pgBlurPass2, 0, 0 );
+              }
+              pgBlurPass1.endDraw();
+        
+              blurShader.set( "horizontalPass", 1 );
+              pgBlurPass2.beginDraw();
+              pgBlurPass2.shader( blurShader );
+              pgBlurPass2.image( pgBlurPass1, 0, 0 );
+              pgBlurPass2.endDraw();
+        }   
+    }
     
-    image( pgBlurPass2, 0, 0 );
+    if (useBlur) image( pgBlurPass2, 0, 0 );
     image( pgBars, 0, 0 );
-     //<>//
     
-   
+    
+    //<>//
     sampler.draw(pgBars);
 }
 

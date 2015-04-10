@@ -11,8 +11,8 @@ class MIDIBar {
 		note = _note;
 		h = keyHeight;
 		w = 0;
-		x = width / 1.7;
-		y = height - (note.pitch - keyboardStart + 1) * keyHeight;
+		x = width / 1.4 - 250 + note.pitch * 4;
+		y =  (note.pitch - keyboardStart + 1) * keyHeight;
 
 		//colorMode(HSB);
 		//noteColor = color(map(note.pitch%12,0,12,0,255),255,100);
@@ -20,34 +20,36 @@ class MIDIBar {
 	}
 
 	void grow(){
-		rectMode(CORNER);
-		fill(0,0, 50);
-		ellipse(x,normalizeY(y),w,w);
+		ellipseMode(CENTER);
+		fill(255);
+                noStroke();
+                float ew = max(w, 30);
+		ellipse(x,normalizeY(y), ew, ew);
 		w+=2;
 	}
 
         public float normalizeY(float y)
         {
-            return y * 2 - 300;
+            return y * 2 - 600 ;
         }
 
 	void scroll(PGraphics pg){
 		//colorMode(HSB);
 		//fill(noteColor);
                 pg.pushMatrix();
-                pg.rectMode(CORNER);
+                pg.ellipseMode(CENTER);
                 pg.noStroke();
                 pg.translate(x, normalizeY(y), z);
-                float size = note.amplitude *1;
-		pg.fill(255,note.amplitude * 2);
+                float size = max(w, 5);
+		pg.fill(255, 222);
 		pg.ellipse(0,0,size * 2,size* 2);
 
-                pg.fill(0,note.amplitude * 4 + 60);
+                pg.fill(0,222);
                 pg.ellipse(0,0,size,size);
                 pg.popMatrix();
         
 		x-=2;
-                z -= 0.5;
+                z += note.amplitude * 0.02;
 
                 /*
 		fill(255);

@@ -16,9 +16,17 @@ void render(PGraphics pg) {
   }
   
   
-  stroke(0);
+  
   for(int i=0;i<midibars.size()-1;i++){
-      line(midibars.get(i).x, midibars.get(i).normalizeY(midibars.get(i).y), midibars.get(i+1).x,  midibars.get(i).normalizeY(midibars.get(i+1).y)); 
+      if (abs(midibars.get(i).x - midibars.get(i+1).x) > 25) continue;
+      if (abs(midibars.get(i).y - midibars.get(i+1).y) > 150) continue;
+      
+     
+      
+      strokeWeight(5);
+      stroke(255, 222);    
+      line(midibars.get(i).x, midibars.get(i).normalizeY(midibars.get(i).y),midibars.get(i).z, 
+      midibars.get(i+1).x,  midibars.get(i).normalizeY(midibars.get(i+1).y), midibars.get(i+1).z); 
     
   }
   pg.endDraw();
