@@ -87,7 +87,7 @@ public static final int SLOPEDOWN = 5;
 ArrayList<MIDIBar> midibars; 
 
 boolean sketchFullScreen() {
-  return true;
+  return false;
 }
 
 

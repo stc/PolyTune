@@ -6,13 +6,21 @@ class MIDIBar {
 	Note note;
 	String noteName = "";
 	color noteColor;
-
+        float fretSize = 45;
+        float stringSpace = 20;
+        int moduloChange = 6;
+        PVector neckStart;
+        
 	MIDIBar(Note _note){
+   
+                neckStart = new PVector(820, 72);
 		note = _note;
 		h = keyHeight;
 		w = 0;
-		x = width / 1.4 - 250 + note.pitch * 4;
-		y =  (note.pitch - keyboardStart + 1) * keyHeight;
+                println("note.pitch " + note.pitch);
+                int string = floor(note.pitch / moduloChange) - 10;
+		x = neckStart.x + string * stringSpace;
+		y =  neckStart.y + (note.pitch%moduloChange) * fretSize + (string * 2 * fretSize) ;
 
 		//colorMode(HSB);
 		//noteColor = color(map(note.pitch%12,0,12,0,255),255,100);
@@ -23,14 +31,15 @@ class MIDIBar {
 		ellipseMode(CENTER);
 		fill(255);
                 noStroke();
-                float ew = max(w, 30);
+                float ew = max(w*2, 20);
 		ellipse(x,normalizeY(y), ew, ew);
 		w+=2;
 	}
 
         public float normalizeY(float y)
         {
-            return y * 2 - 600 ;
+            //return y * 2 - 600 ;
+            return y;
         }
 
 	void scroll(PGraphics pg){
