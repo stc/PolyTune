@@ -5,6 +5,8 @@
 
 	stc@binaura.net / 2015
 
+        messing with visuals: adam@prezi.com 
+
 */
 
 
@@ -26,7 +28,7 @@ int ZERO_PAD_MULTIPLIER = 4; //	// zero padding adds interpolation resolution to
 
 int fftBufferSize = bufferSize * ZERO_PAD_MULTIPLIER;
 int fftSize = fftBufferSize/2;
-int PEAK_THRESHOLD = 10; // default peak threshold
+int PEAK_THRESHOLD = 5; // default peak threshold
 
 // MIDI notes span from 0 - 128, octaves -1 -> 9. Specify start and end for piano
 int keyboardStart = 12; // 12 is octave C0
@@ -158,8 +160,8 @@ void draw() {
     image( pgBars, 0, 0 );
     
     
-    //<>//
-    sampler.draw(pgBars);
+   
+    sampler.draw(pgBars); //<>//
 }
 
 void stop() {

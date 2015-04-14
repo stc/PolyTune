@@ -19,7 +19,7 @@ void render(PGraphics pg) {
   
   for(int i=0;i<midibars.size()-1;i++){
       if (abs(midibars.get(i).x - midibars.get(i+1).x) > 25) continue;
-      if (abs(midibars.get(i).y - midibars.get(i+1).y) > 150) continue;
+      if (abs(midibars.get(i).y - midibars.get(i+1).y) > 250) continue;
       
      
       

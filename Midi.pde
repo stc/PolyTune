@@ -8,7 +8,7 @@ void outputMIDINotes() {
       //  NOTE ON
       //  we have <note.channel> <note.pitch> <note.velocity>
       notesOpen[note.pitch] = note;
-      println("ON: " + note.pitch);
+      //println("ON: " + note.pitch);
       midibars.add(new MIDIBar(note));
     }
   }
@@ -23,7 +23,7 @@ void outputMIDINotes() {
         }
       }
       if ( !isOpen ) {
-        println("OFF: " + notesOpen[i].pitch);
+        //println("OFF: " + notesOpen[i].pitch);
         for(int j=0; j<midibars.size(); j++){
           if(midibars.get(j).note.pitch == notesOpen[i].pitch){
             midibars.get(j).on = false;
