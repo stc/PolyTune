@@ -3,6 +3,7 @@ class MIDIBar
     boolean diagonal = true; // fretboard mapped or diagonal
     float x, y, w, h, z;
     boolean on = true;
+    boolean harmonic = false;
     int pitch;
     int keyHeight = height / (keyboardEnd - keyboardStart);
     Note note;
@@ -62,22 +63,14 @@ class MIDIBar
         pg.fill(255, 222);
         pg.ellipse(0, 0, size * 2, size* 2);
 
-        pg.fill(0, 222);
+        pg.fill(0, 200 + note.amplitude);
         pg.ellipse(0, 0, size, size);
         pg.popMatrix();
 
-        x-=2;
-        z += note.amplitude * 0.02;
-
-        /*
-		fill(255);
-         		if(note.amplitude > 40){
-         			//text(note.label(), x + 5, height - ((note.pitch - keyboardStart) * keyHeight));
-         		}
-         		if(w>40){
-         		//	text(note.label(), x + 5, height - ((note.pitch - keyboardStart) * keyHeight));
-         		}
-         */
+        println("noteLength" + note.noteLength);
+        //x-=((float)note.noteLength )/5f + 0.5f;
+        x -= max(5 - w/20, 0.5);
+        z += note.amplitude * 0.01;
     }
 
     void display(PGraphics pg) {

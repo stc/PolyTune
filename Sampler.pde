@@ -146,21 +146,27 @@ class Sampler implements AudioListener
         if ( HARMONICS_TOGGLE ) {
           for ( int f = 0; f < foundPeak.length; f++ ) {
             //TODO: Cant remember why this is here
-            if (foundPeak.length > 2 ) {
+            if (foundPeak.length > 2 ) 
+            {
               isHarmonic = true;
               break;
             }
             // If the current frequencies note has already peaked in a lower octave check to see if its level is lower probably a harmonic
-            if ( freqToPitch(freq[k]) % 12 == freqToPitch(foundPeak[f]) % 12 && spectrum[k] < foundLevel[f] ) {
+            if ( freqToPitch(freq[k]) % 12 == freqToPitch(foundPeak[f]) % 12 && spectrum[k] < foundLevel[f] ) 
+            {
               isHarmonic = true;
               break;
             }
           }
         }
   
-        if ( isHarmonic ) {        
+        if ( isHarmonic ) 
+        {        
           peak[k] = HARMONIC;
-        } else {
+          println("dont add harmonic");
+        } 
+        else 
+        {
           peak[k] = PEAK;
           
           notes[frameNumber] = (Note[])append(notes[frameNumber], new Note(freq[k], spectrum[k]));

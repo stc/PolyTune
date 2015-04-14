@@ -1,4 +1,5 @@
-int freqToPitch(float f) {
+int freqToPitch(float f) 
+{
   int p = round(69.0 + 12.0 *(log(f/440.0) / log(2.0)));
   if ( p > 0 && p < 128 ) {
     return p;
@@ -7,7 +8,8 @@ int freqToPitch(float f) {
   }
 }
 
-float pitchToFreq(int p) {
+float pitchToFreq(int p) 
+{
   return 440.0 * pow(2, (p - 69) / 12.0);
 }
 

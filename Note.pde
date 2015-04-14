@@ -10,8 +10,11 @@ class Note {
   int channel;
   int pitch;
   int velocity;
+  int noteLength = 1;
+  int noteOnFrame = 0;
   
   Note(float frequency, float amplitude) {
+    this.noteOnFrame = frameNumber;
     this.frequency = frequency;   
     this.amplitude = amplitude;
     this.pitch = freqToPitch(frequency);
