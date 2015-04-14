@@ -1,6 +1,7 @@
 class MIDIBar 
 {
     boolean diagonal = true; // fretboard mapped or diagonal
+    boolean runningNotes = true; // short notes slide faster
     float x, y, w, h, z;
     boolean on = true;
     boolean harmonic = false;
@@ -67,9 +68,10 @@ class MIDIBar
         pg.ellipse(0, 0, size, size);
         pg.popMatrix();
 
-        println("noteLength" + note.noteLength);
-        //x-=((float)note.noteLength )/5f + 0.5f;
-        x -= max(5 - w/20, 0.5);
+        if (runningNotes)
+            x -= max(5 - w/20, 0.5);
+        else
+            x -= 1;
         z += note.amplitude * 0.01;
     }
 
