@@ -13,7 +13,7 @@ void render(PGraphics pg)
     {
         //if (!checkForHarmonics(midibars.get(i)))
             midibars.get(i).display(pg);
-        if (midibars.get(i).x>width) {
+        if ((midibars.get(i).x>width) || (midibars.get(i).x<0)) {
             midibars.remove(midibars.get(i));
         }
     }
