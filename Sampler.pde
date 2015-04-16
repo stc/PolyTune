@@ -64,12 +64,18 @@ class Sampler implements AudioListener
     float freqLowRange = octaveLowRange(0);
     float freqHighRange = octaveHighRange(7);
     
+    peaknum = 0;
+    
     for (int k = 0; k < fftSize; k++) {
       freq[k] = k / (float)fftBufferSize * input.sampleRate();
       
       // skip FFT bins that lay outside of octaves 0-9 
       if ( freq[k] < freqLowRange || freq[k] > freqHighRange ) { continue; }
-   
+      
+      
+     if(fft.getBand(k)>10) {
+       peaknum++;
+     }
       // Calculate fft bin distance and apply weighting to spectrum
       float closestFreq = pitchToFreq(freqToPitch(freq[k])); // Rounds FFT frequency to closest semitone frequency
       boolean filterFreq = false;
@@ -89,6 +95,7 @@ class Sampler implements AudioListener
         
         spectrum[k] = fft.getBand(k) * binWeight(WEIGHT_TYPE, binDistance[k]);
         
+        
         if ( LINEAR_EQ_TOGGLE ) {
           spectrum[k] *= (linearEQIntercept + k * linearEQSlope);
         }
@@ -97,7 +104,6 @@ class Sampler implements AudioListener
         pcp[frameNumber][freqToPitch(freq[k]) % 12] += pow(fft.getBand(k), 2) * binWeight(WEIGHT_TYPE, binDistance[k]);
       }
     }
-    
     normalizePCP();
     
     if ( PCP_TOGGLE ) {

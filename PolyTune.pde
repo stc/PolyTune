@@ -43,6 +43,9 @@ Smooth smoother;
 
 FFT fft;
 
+//  used to determine ~timbre
+int peaknum = 0;
+
 boolean showUI = false;
 
 float[] buffer = new float[fftBufferSize];
