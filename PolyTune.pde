@@ -9,7 +9,7 @@
 
 */
 
-
+boolean runFullscreen = false;
 PShader blurShader;
 PGraphics pgBars, pgBlurPass1, pgBlurPass2;
 final int MAX_BLUR_ITERATIONS = 3;
@@ -92,7 +92,7 @@ public static final int SLOPEDOWN = 5;
 ArrayList<MIDIBar> midibars; 
 
 boolean sketchFullScreen() {
-  return false;
+  return runFullscreen;
 }
 
 

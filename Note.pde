@@ -14,7 +14,7 @@ class Note {
   int noteOnFrame = 0;
   
   Note(float frequency, float amplitude) {
-    this.noteOnFrame = frameNumber;
+    this.noteOnFrame = frameCount;
     this.frequency = frequency;   
     this.amplitude = amplitude;
     this.pitch = freqToPitch(frequency);

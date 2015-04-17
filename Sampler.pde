@@ -169,7 +169,7 @@ class Sampler implements AudioListener
         if ( isHarmonic ) 
         {        
           peak[k] = HARMONIC;
-          println("dont add harmonic");
+          //println("dont add harmonic");
         } 
         else 
         {

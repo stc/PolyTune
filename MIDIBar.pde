@@ -1,7 +1,7 @@
 class MIDIBar 
 {
     boolean diagonal = true; // fretboard mapped or diagonal
-    boolean runningNotes = true; // short notes slide faster
+    boolean runningNotes = false; // short notes slide faster
     float x, y, w, h, z;
     boolean on = true;
     boolean harmonic = false;
@@ -26,8 +26,8 @@ class MIDIBar
         h = keyHeight;
         w = 0;
         timbreColor = peaknum * 4;
-        println("TIMBRE: " + peaknum);
-        println("note.pitch " + note.pitch);
+        //println("TIMBRE: " + peaknum);
+        //println("note.pitch " + note.pitch);
         int string = floor(note.pitch / moduloChange) - 10;
         
         if (!diagonal)
@@ -44,7 +44,7 @@ class MIDIBar
 
     void grow() {
         ellipseMode(CENTER);
-        fill(255,255-timbreColor,255-timbreColor);
+        fill(155+timbreColor,255-timbreColor,255-timbreColor);
         noStroke();
         float ew = max(w*2, 20);
         ellipse(x, normalizeY(y), ew, ew);
@@ -66,7 +66,7 @@ class MIDIBar
         pg.translate(x, normalizeY(y), z);
         float size = max(w, 5);
         //pg.fill(255, 222);
-        pg.fill(255,255-timbreColor,255-timbreColor);
+        pg.fill(200+timbreColor,255-timbreColor,255-timbreColor);
         pg.ellipse(0, 0, size * 2, size* 2);
 
         pg.fill(0, 200 + note.amplitude);
@@ -76,7 +76,7 @@ class MIDIBar
         if (runningNotes)
             x -= max(5 - w/20, 0.5);
         else
-            x -= 1;
+            x -= 2;
         z += note.amplitude * 0.01;
     }
 
