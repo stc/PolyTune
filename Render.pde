@@ -14,13 +14,13 @@ void render(PGraphics pg)
         if (checkForHarmonics(midibars.get(i)))
         {
             midibars.remove(midibars.get(i));
-            break;
+            //midibars.get(i).isHarmonic = true;
+            continue;
         }
-            
         if ((midibars.get(i).x>width) || (midibars.get(i).x<0)) {
             midibars.remove(midibars.get(i));
+            continue;
         }
-        
         midibars.get(i).display(pg);
     }
 
@@ -39,12 +39,16 @@ void render(PGraphics pg)
 
 boolean checkForHarmonics(MIDIBar m)
 {
+    
     boolean harm = false;
     for (int i=0; i<midibars.size (); i++)
     {
         Note n =  midibars.get(i).note;
-        if (m.note.pitch % 12 == n.pitch % 12 &&
+        if (
+            m.note.pitch % 12 == n.pitch % 12 &&
             m.note.pitch > n.pitch && 
+            m.note.noteOnFrame > n.noteOnFrame &&
+            m.note.velocity < n.velocity &&
             abs(m.note.noteOnFrame - n.noteOnFrame) < 30)
         {
             println("remove!");

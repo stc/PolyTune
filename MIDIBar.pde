@@ -4,7 +4,7 @@ class MIDIBar
     boolean runningNotes = false; // short notes slide faster
     float x, y, w, h, z;
     boolean on = true;
-    boolean harmonic = false;
+    boolean isHarmonic = false;
     int pitch;
     int keyHeight = height / (keyboardEnd - keyboardStart);
     Note note;
@@ -45,6 +45,7 @@ class MIDIBar
     void grow() {
         ellipseMode(CENTER);
         fill(155+timbreColor,255-timbreColor,255-timbreColor);
+        if (isHarmonic) fill(0);
         noStroke();
         float ew = max(w*2, 20);
         ellipse(x, normalizeY(y), ew, ew);
@@ -67,6 +68,7 @@ class MIDIBar
         float size = max(w, 5);
         //pg.fill(255, 222);
         pg.fill(200+timbreColor,255-timbreColor,255-timbreColor);
+        if (isHarmonic) pg.fill(0);
         pg.ellipse(0, 0, size * 2, size* 2);
 
         pg.fill(0, 200 + note.amplitude);

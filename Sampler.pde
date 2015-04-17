@@ -175,7 +175,9 @@ class Sampler implements AudioListener
         {
           peak[k] = PEAK;
           
-          notes[frameNumber] = (Note[])append(notes[frameNumber], new Note(freq[k], spectrum[k]));
+          Note n = new Note(freq[k], spectrum[k]);
+          n.noteOnFrame = frameCount;
+          notes[frameNumber] = (Note[])append(notes[frameNumber], n);
           
           // Track Peaks and Levels in this pass so we can detect harmonics 
           foundPeak = append(foundPeak, freq[k]);
