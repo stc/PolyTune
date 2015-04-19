@@ -2,6 +2,7 @@ class MIDIBar
 {
     boolean diagonal = true; // fretboard mapped or diagonal
     boolean runningNotes = false; // short notes slide faster
+    boolean colorByTimbre = true;
     float x, y, w, h, z;
     boolean on = true;
     boolean isHarmonic = false;
@@ -44,7 +45,9 @@ class MIDIBar
 
     void grow() {
         ellipseMode(CENTER);
-        fill(155+timbreColor,255-timbreColor,255-timbreColor);
+        if (colorByTimbre) fill(255-timbreColor,155+timbreColor,155+timbreColor);
+        else fill(255);
+        
         if (isHarmonic) fill(0);
         noStroke();
         float ew = max(w*2, 20);
@@ -59,18 +62,19 @@ class MIDIBar
     }
 
     void scroll(PGraphics pg) {
-        //colorMode(HSB);
-        //fill(noteColor);
+
         pg.pushMatrix();
         pg.ellipseMode(CENTER);
         pg.noStroke();
         pg.translate(x, normalizeY(y), z);
         float size = max(w, 5);
-        //pg.fill(255, 222);
-        pg.fill(200+timbreColor,255-timbreColor,255-timbreColor);
-        if (isHarmonic) pg.fill(0);
-        pg.ellipse(0, 0, size * 2, size* 2);
+        if (colorByTimbre) pg.fill(255-timbreColor,155+timbreColor,155+timbreColor);
+        else pg.fill(255, 222);
+ 
+        // for debugging bars to remove
+        if (isHarmonic) pg.fill(0, 255);
 
+        pg.ellipse(0, 0, size * 2, size* 2);
         pg.fill(0, 200 + note.amplitude);
         pg.ellipse(0, 0, size, size);
         pg.popMatrix();

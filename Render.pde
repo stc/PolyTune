@@ -49,7 +49,7 @@ boolean checkForHarmonics(MIDIBar m)
             m.note.pitch > n.pitch && 
             m.note.noteOnFrame > n.noteOnFrame &&
             m.note.velocity < n.velocity &&
-            abs(m.note.noteOnFrame - n.noteOnFrame) < 30)
+            abs(m.note.noteOnFrame - n.noteOnFrame) < 60)
         {
             println("remove!");
             return true;
