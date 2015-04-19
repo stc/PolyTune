@@ -13,11 +13,12 @@ void render(PGraphics pg)
     {
         if (checkForHarmonics(midibars.get(i)))
         {
+            println("removed " + midibars.get(i).note.label() );
             midibars.remove(midibars.get(i));
             //midibars.get(i).isHarmonic = true;
             continue;
         }
-        if ((midibars.get(i).x>width) || (midibars.get(i).x<0)) {
+        if ((midibars.get(i).x>width) || (midibars.get(i).x < -midibars.get(i).w)) {
             midibars.remove(midibars.get(i));
             continue;
         }
@@ -25,14 +26,30 @@ void render(PGraphics pg)
     }
 
     // lines
-    for (int i=0; i<midibars.size ()-1; i++) 
+    boolean skipped = false;
+    for (int i=0; i<midibars.size()-1; i++) 
     {
-        if (abs(midibars.get(i).note.noteOnFrame - midibars.get(i+1).note.noteOnFrame) > 10) continue;
-        if (abs(midibars.get(i).y - midibars.get(i+1).y) > 100) continue;
+        if (abs(midibars.get(i).x - midibars.get(i+1).x) > 100 ||
+            abs(midibars.get(i).y - midibars.get(i+1).y) > 100 )
+        {
+            skipped = true;
+            continue;
+        }
+        
+     
+        
         strokeWeight(5);
         stroke(255, 222);    
-        line(midibars.get(i).x, midibars.get(i).normalizeY(midibars.get(i).y), midibars.get(i).z, 
-        midibars.get(i+1).x, midibars.get(i).normalizeY(midibars.get(i+1).y), midibars.get(i+1).z);
+        line(midibars.get(i).x, midibars.get(i).y, midibars.get(i).z, 
+        midibars.get(i+1).x, midibars.get(i+1).y, midibars.get(i+1).z);
+        
+        if (skipped && i>2)
+        {
+            //line(midibars.get(i).x, midibars.get(i).y, midibars.get(i).z, 
+            //midibars.get(i-2).x, midibars.get(i-2).y, midibars.get(i-2).z);
+        }
+        skipped = false;
+        
     }
     pg.endDraw();
 }
@@ -47,11 +64,10 @@ boolean checkForHarmonics(MIDIBar m)
         if (
             m.note.pitch % 12 == n.pitch % 12 &&
             m.note.pitch > n.pitch && 
-            m.note.noteOnFrame > n.noteOnFrame &&
-            m.note.velocity < n.velocity &&
-            abs(m.note.noteOnFrame - n.noteOnFrame) < 60)
+            m.note.noteOnFrame >= n.noteOnFrame &&
+            m.note.velocity <= n.velocity &&
+            abs(m.note.noteOnFrame - n.noteOnFrame) < 120)
         {
-            println("remove!");
             return true;
         }
     }

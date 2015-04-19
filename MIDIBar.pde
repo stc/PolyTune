@@ -2,7 +2,7 @@ class MIDIBar
 {
     boolean diagonal = true; // fretboard mapped or diagonal
     boolean runningNotes = false; // short notes slide faster
-    boolean colorByTimbre = true;
+    boolean colorByTimbre = false;
     float x, y, w, h, z;
     boolean on = true;
     boolean isHarmonic = false;
@@ -72,10 +72,11 @@ class MIDIBar
         else pg.fill(255, 222);
  
         // for debugging bars to remove
-        if (isHarmonic) pg.fill(0, 255);
+        if (isHarmonic) pg.fill(255, 0, 0, 255);
 
         pg.ellipse(0, 0, size * 2, size* 2);
         pg.fill(0, 200 + note.amplitude);
+        if (isHarmonic) pg.fill(255, 0, 0, 255);
         pg.ellipse(0, 0, size, size);
         pg.popMatrix();
 
