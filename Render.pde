@@ -1,5 +1,7 @@
 void render(PGraphics pg) 
 {
+    
+    
     if (showUI) {
         renderWindowCurve();
         renderFFT();
@@ -11,67 +13,78 @@ void render(PGraphics pg)
     // notes
     for (int i=0; i<midibars.size (); i++)
     {
+        /*
         if (checkForHarmonics(midibars.get(i)))
         {
-            println("removed " + midibars.get(i).note.label() );
-            midibars.remove(midibars.get(i));
+            //println("removed " + midibars.get(i).note.label() );
+            //midibars.remove(midibars.get(i));
             //midibars.get(i).isHarmonic = true;
-            continue;
+            //continue;
         }
-        if ((midibars.get(i).x>width) || (midibars.get(i).x < -midibars.get(i).w)) {
+        */
+        if ((midibars.get(i).x>width) || (midibars.get(i).x < - midibars.get(i).w * 2)) {
             midibars.remove(midibars.get(i));
             continue;
         }
         midibars.get(i).display(pg);
     }
 
+    boolean mesh = true;
     // lines
-    boolean skipped = false;
+    if (mesh)
+    {
+        strokeWeight(1);
+        stroke(255, 100);
+    } 
+    else
+    {
+        strokeWeight(5);
+        stroke(255, 222);
+    }
     for (int i=0; i<midibars.size()-1; i++) 
     {
-        if (abs(midibars.get(i).x - midibars.get(i+1).x) > 100 ||
+        if(mesh)
+        {
+            for (int k = 0; k < midibars.size(); k++)
+            {
+                if (abs(midibars.get(i).x - midibars.get(k).x) < 50 &&
+                    abs(midibars.get(i).y - midibars.get(k).y) < 100 )
+                {
+                    line(midibars.get(i).x, midibars.get(i).y, midibars.get(i).z, 
+                    midibars.get(k).x, midibars.get(k).y, midibars.get(k).z); 
+                }   
+            }
+        }
+        else
+        {
+            if (abs(midibars.get(i).x - midibars.get(i+1).x) > 100 ||
             abs(midibars.get(i).y - midibars.get(i+1).y) > 100 )
-        {
-            skipped = true;
-            continue;
-        }
-        
-     
-        
-        strokeWeight(5);
-        stroke(255, 222);    
-        line(midibars.get(i).x, midibars.get(i).y, midibars.get(i).z, 
-        midibars.get(i+1).x, midibars.get(i+1).y, midibars.get(i+1).z);
-        
-        if (skipped && i>2)
-        {
-            //line(midibars.get(i).x, midibars.get(i).y, midibars.get(i).z, 
-            //midibars.get(i-2).x, midibars.get(i-2).y, midibars.get(i-2).z);
-        }
-        skipped = false;
-        
+            {
+                continue;
+            }      
+            line(midibars.get(i).x, midibars.get(i).y, midibars.get(i).z, 
+            midibars.get(i+1).x, midibars.get(i+1).y, midibars.get(i+1).z);    
+        } 
     }
     pg.endDraw();
 }
 
 boolean checkForHarmonics(MIDIBar m)
 {
-    
-    boolean harm = false;
+    Note h = m.note;
     for (int i=0; i<midibars.size (); i++)
     {
-        Note n =  midibars.get(i).note;
-        if (
-            m.note.pitch % 12 == n.pitch % 12 &&
-            m.note.pitch > n.pitch && 
-            m.note.noteOnFrame >= n.noteOnFrame &&
-            m.note.velocity <= n.velocity &&
-            abs(m.note.noteOnFrame - n.noteOnFrame) < 120)
+        Note base = midibars.get(i).note;
+        if (h != base &&
+            h.semitone == base.semitone &&
+            h.pitch >= base.pitch && 
+            h.velocity <= base.velocity &&
+            abs(h.noteOnFrame - base.noteOnFrame) < 30)
         {
             return true;
         }
     }
-    return harm;
+    return false;
 }
 
 void renderPeaks() {

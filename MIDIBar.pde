@@ -48,10 +48,11 @@ class MIDIBar
         if (colorByTimbre) fill(255-timbreColor,155+timbreColor,155+timbreColor);
         else fill(255);
         
-        if (isHarmonic) fill(0);
+        if (isHarmonic) fill(255, 0, 0);
+        
         noStroke();
         float ew = max(w*2, 20);
-        ellipse(x, normalizeY(y), ew, ew);
+        ellipse(x, y, ew, ew);
         w+=2;
     }
 
@@ -62,20 +63,21 @@ class MIDIBar
     }
 
     void scroll(PGraphics pg) {
-
+    
+        float a = map(x, width/2, 0, 222, 0);
         pg.pushMatrix();
         pg.ellipseMode(CENTER);
         pg.noStroke();
-        pg.translate(x, normalizeY(y), z);
+        pg.translate(x, y, z);
         float size = max(w, 5);
         if (colorByTimbre) pg.fill(255-timbreColor,155+timbreColor,155+timbreColor);
-        else pg.fill(255, 222);
+        else pg.fill(255, a);
  
         // for debugging bars to remove
         if (isHarmonic) pg.fill(255, 0, 0, 255);
 
         pg.ellipse(0, 0, size * 2, size* 2);
-        pg.fill(0, 200 + note.amplitude);
+        pg.fill(0, a + note.amplitude);
         if (isHarmonic) pg.fill(255, 0, 0, 255);
         pg.ellipse(0, 0, size, size);
         pg.popMatrix();
