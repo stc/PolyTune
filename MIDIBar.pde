@@ -17,7 +17,7 @@ class MIDIBar
     PVector neckStart;
     int startNotePitch = 45;    
     int timbreColor;
-    MIDIBar before, after;
+    MIDIBar after;
     
     MIDIBar(Note _note) 
     {

@@ -1,6 +1,8 @@
 void render(PGraphics pg) 
 {
     
+    boolean mesh = true;
+    boolean thinMesh = false;
     
     if (showUI) {
         renderWindowCurve();
@@ -22,14 +24,14 @@ void render(PGraphics pg)
             //continue;
         }
         */
-        if ((midibars.get(i).x>width) || (midibars.get(i).x < - midibars.get(i).w * 2)) {
+        if ((midibars.get(i).x>width) || (midibars.get(i).x < - midibars.get(i).w * 4)) {
             midibars.remove(midibars.get(i));
             continue;
         }
         midibars.get(i).display(pg);
     }
-
-    boolean mesh = true;
+    pg.endDraw();
+    
     // lines
     if (mesh)
     {
@@ -47,14 +49,13 @@ void render(PGraphics pg)
         // calculate links
         for (int i=0; i<midibars.size()-1; i++) 
         {
-            if (midibars.get(i).x < 600) continue;
-            //if (midibars.get(i).before != null && midibars.get(i).after != null) continue;
-            if (midibars.get(i).after != null) continue;
+            if (midibars.get(i).x < 600 && !thinMesh) continue;
+            if (midibars.get(i).after != null && !thinMesh) continue;
         
             for (int k = 0; k < midibars.size(); k++)
             {
                 if (i==k || abs(midibars.get(i).y - midibars.get(k).y) > 100) continue;
-                float diff = midibars.get(i).x - midibars.get(k).x;
+                float diff = midibars.get(k).x - midibars.get(i).x;
                 if ( diff < 50 && diff > 0 && midibars.get(i).after == null)
                 {
                     midibars.get(i).after = midibars.get(k);
@@ -63,44 +64,44 @@ void render(PGraphics pg)
                 {
                     midibars.get(i).after = midibars.get(k);
                 }
-                /*
-                else if ( diff > - 50 && diff <  0 && midibars.get(i).after == null)
-                {
-                    midibars.get(i).before = midibars.get(k);
-                }
-                else if (diff > - 50 && diff <  0 && midibars.get(i).after.x < midibars.get(k).x)
-                {
-                    midibars.get(i).before = midibars.get(k);
-                }
-                */
+                
                           
                 // thin mesh
-                strokeWeight(1);
-                stroke(0, 100);
-                if (abs(midibars.get(i).x - midibars.get(k).x) < 50 &&
-                    abs(midibars.get(i).y - midibars.get(k).y) < 100 )
+                if (thinMesh)
                 {
-                    line(midibars.get(i).x, midibars.get(i).y, midibars.get(i).z, 
-                    midibars.get(k).x, midibars.get(k).y, midibars.get(k).z); 
-                }      
+                    strokeWeight(1);
+                    stroke(0, 50);
+                    if (abs(midibars.get(i).x - midibars.get(k).x) < 50 &&
+                        abs(midibars.get(i).y - midibars.get(k).y) < 100 )
+                    {
+                        line(midibars.get(i).x, midibars.get(i).y, midibars.get(i).z, 
+                        midibars.get(k).x, midibars.get(k).y, midibars.get(k).z); 
+                    }
+                } 
+                   
             }
         }
         
         // draw links
-        strokeWeight(6);
-        stroke(255, 100);
+        strokeWeight(8);
+        stroke(255, 222);
+        noFill();
         for (int i=0; i<midibars.size()-1; i++) 
         {
-            
-            //if (midibars.get(i).before != null)
-            //    line(midibars.get(i).x, midibars.get(i).y, midibars.get(i).z, 
-            //        midibars.get(i).before.x, midibars.get(i).before.y, midibars.get(i).before.z); 
             if (midibars.get(i).after != null)
-                line(midibars.get(i).x, midibars.get(i).y, midibars.get(i).z, 
-                    midibars.get(i).after.x, midibars.get(i).after.y, midibars.get(i).after.z); 
+            {
+                //line(midibars.get(i).x, midibars.get(i).y, midibars.get(i).z, 
+                //    midibars.get(i).after.x, midibars.get(i).after.y, midibars.get(i).after.z);
+                    
+                PVector p = new PVector(midibars.get(i).x, midibars.get(i).y, midibars.get(i).z);
+                PVector q = new PVector(midibars.get(i).after.x, midibars.get(i).after.y, midibars.get(i).after.z);
+                
+                curve(p.x, p.y - q.y, p.z, p.x, p.y, p.z, q.x, q.y, q.z, q.x, q.y + p.y, q.z);
+        
+    
+            }
+ 
         }
-        
-        
     }
     else
     {
@@ -118,7 +119,7 @@ void render(PGraphics pg)
         
     
     
-    pg.endDraw();
+    
 }
 
 boolean checkForHarmonics(MIDIBar m)
