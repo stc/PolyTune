@@ -9,28 +9,7 @@ void render(PGraphics pg)
         renderFFT();
         renderPeaks();
     }
-    pg.beginDraw();
-    pg.clear();
-    
-    // notes
-    for (int i=0; i<midibars.size (); i++)
-    {
-        /*
-        if (checkForHarmonics(midibars.get(i)))
-        {
-            //println("removed " + midibars.get(i).note.label() );
-            //midibars.remove(midibars.get(i));
-            //midibars.get(i).isHarmonic = true;
-            //continue;
-        }
-        */
-        if ((midibars.get(i).x>width) || (midibars.get(i).x < - midibars.get(i).w * 4)) {
-            midibars.remove(midibars.get(i));
-            continue;
-        }
-        midibars.get(i).display(pg);
-    }
-    pg.endDraw();
+   
     
     // lines
     if (mesh)
@@ -46,6 +25,8 @@ void render(PGraphics pg)
     
     if(mesh)
     {
+        float xLimit = 30;
+        float yLimit = 100;
         // calculate links
         for (int i=0; i<midibars.size()-1; i++) 
         {
@@ -54,13 +35,13 @@ void render(PGraphics pg)
         
             for (int k = 0; k < midibars.size(); k++)
             {
-                if (i==k || abs(midibars.get(i).y - midibars.get(k).y) > 100) continue;
+                if (i==k || abs(midibars.get(i).y - midibars.get(k).y) > yLimit) continue;
                 float diff = midibars.get(k).x - midibars.get(i).x;
-                if ( diff < 50 && diff > 0 && midibars.get(i).after == null)
+                if ( diff < xLimit && diff > 0 && midibars.get(i).after == null)
                 {
                     midibars.get(i).after = midibars.get(k);
                 }
-                else if (diff < 50 && diff > 0 && midibars.get(i).after.x > midibars.get(k).x)
+                else if (diff < xLimit && diff > 0 && midibars.get(i).after.x > midibars.get(k).x)
                 {
                     midibars.get(i).after = midibars.get(k);
                 }
@@ -96,8 +77,10 @@ void render(PGraphics pg)
                 PVector p = new PVector(midibars.get(i).x, midibars.get(i).y, midibars.get(i).z);
                 PVector q = new PVector(midibars.get(i).after.x, midibars.get(i).after.y, midibars.get(i).after.z);
                 
-                curve(p.x, p.y - q.y, p.z, p.x, p.y, p.z, q.x, q.y, q.z, q.x, q.y + p.y, q.z);
-        
+                float dy = p.y - q.y;
+                float midX = (p.x - q.x)/2;
+                
+                curve(p.x, p.y - q.y/2, p.z, p.x, p.y, p.z, q.x, q.y, q.z, q.x, q.y + p.y/2, q.z);
     
             }
  
@@ -117,6 +100,29 @@ void render(PGraphics pg)
         }
     }
         
+        
+    // notes    
+    pg.beginDraw();
+    pg.clear();
+    
+    for (int i=0; i<midibars.size (); i++)
+    {
+        /*
+        if (checkForHarmonics(midibars.get(i)))
+        {
+            //println("removed " + midibars.get(i).note.label() );
+            //midibars.remove(midibars.get(i));
+            //midibars.get(i).isHarmonic = true;
+            //continue;
+        }
+        */
+        if ((midibars.get(i).x>width) || (midibars.get(i).x < - midibars.get(i).w * 4)) {
+            midibars.remove(midibars.get(i));
+            continue;
+        }
+        midibars.get(i).display(pg);
+    }
+    pg.endDraw();
     
     
     
