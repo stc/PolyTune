@@ -41,21 +41,67 @@ void render(PGraphics pg)
         strokeWeight(5);
         stroke(255, 222);
     }
-    for (int i=0; i<midibars.size()-1; i++) 
+    
+    if(mesh)
     {
-        if(mesh)
+        // calculate links
+        for (int i=0; i<midibars.size()-1; i++) 
         {
+            if (midibars.get(i).x < 300) continue;
+            if (midibars.get(i).before != null && midibars.get(i).after != null) continue;
+        
             for (int k = 0; k < midibars.size(); k++)
             {
+                if (i==k || abs(midibars.get(i).y - midibars.get(k).y) > 100) continue;
+                float diff = midibars.get(i).x - midibars.get(k).x;
+                if ( diff < 50 && diff > 0 && midibars.get(i).after == null)
+                {
+                    midibars.get(i).after = midibars.get(k);
+                }
+                else if (diff < 50 && diff > 0 && midibars.get(i).after.x > midibars.get(k).x)
+                {
+                    midibars.get(i).after = midibars.get(k);
+                }
+                else if ( diff > - 50 && diff <  0 && midibars.get(i).after == null)
+                {
+                    midibars.get(i).before = midibars.get(k);
+                }
+                else if (diff > - 50 && diff <  0 && midibars.get(i).after.x < midibars.get(k).x)
+                {
+                    midibars.get(i).before = midibars.get(k);
+                }
+                
+                          
+                // thin mesh
+                strokeWeight(1);
+                stroke(255, 100);
                 if (abs(midibars.get(i).x - midibars.get(k).x) < 50 &&
                     abs(midibars.get(i).y - midibars.get(k).y) < 100 )
                 {
                     line(midibars.get(i).x, midibars.get(i).y, midibars.get(i).z, 
                     midibars.get(k).x, midibars.get(k).y, midibars.get(k).z); 
-                }   
+                }      
             }
         }
-        else
+        
+        // draw links
+        strokeWeight(6);
+        stroke(255, 222);
+        for (int i=0; i<midibars.size()-1; i++) 
+        {
+            if (midibars.get(i).before != null)
+                line(midibars.get(i).x, midibars.get(i).y, midibars.get(i).z, 
+                    midibars.get(i).before.x, midibars.get(i).before.y, midibars.get(i).before.z); 
+            if (midibars.get(i).after != null)
+                line(midibars.get(i).x, midibars.get(i).y, midibars.get(i).z, 
+                    midibars.get(i).after.x, midibars.get(i).after.y, midibars.get(i).after.z); 
+        }
+        
+        
+    }
+    else
+    {
+        for (int i=0; i<midibars.size()-1; i++) 
         {
             if (abs(midibars.get(i).x - midibars.get(i+1).x) > 100 ||
             abs(midibars.get(i).y - midibars.get(i+1).y) > 100 )
@@ -63,9 +109,12 @@ void render(PGraphics pg)
                 continue;
             }      
             line(midibars.get(i).x, midibars.get(i).y, midibars.get(i).z, 
-            midibars.get(i+1).x, midibars.get(i+1).y, midibars.get(i+1).z);    
-        } 
+            midibars.get(i+1).x, midibars.get(i+1).y, midibars.get(i+1).z); 
+        }
     }
+        
+    
+    
     pg.endDraw();
 }
 

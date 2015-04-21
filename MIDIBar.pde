@@ -15,10 +15,10 @@ class MIDIBar
     float stringSpace = 20;
     int moduloChange = 6;
     PVector neckStart;
-    int startNotePitch = 45;
-    
+    int startNotePitch = 45;    
     int timbreColor;
-
+    MIDIBar before, after;
+    
     MIDIBar(Note _note) 
     {
 
