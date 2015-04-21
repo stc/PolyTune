@@ -66,7 +66,7 @@ class MIDIBar
         pushMatrix();
         ellipseMode(CENTER);
         noStroke();
-        translate(x, y, z);
+        translate(x, y, z + 2);
         float size = max(w-10, 5);
         if (colorByTimbre) fill(255-timbreColor,155+timbreColor,155+timbreColor, map(x, 820, 200, 222, 0));
         else fill(255, map(x, 820, 200, 222, 0));
@@ -75,6 +75,7 @@ class MIDIBar
         if (isHarmonic) fill(255, 0, 0, 255);
         float bloat = map(x, 820, 200, 2, 1);
         ellipse(0, 0, size * bloat, size * bloat);
+        
         fill(0, map(x, 820, 0, 256, 200) + note.amplitude);
         ellipse(0, 0, size, size);
         popMatrix();
