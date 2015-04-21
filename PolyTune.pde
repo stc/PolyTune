@@ -9,6 +9,12 @@
  
  */
 
+int song = 1;
+final static int NUTHSELL = 0;
+final static int KISKECE = 1;
+
+int numOns = 0;
+
 boolean runFullscreen = false;
 boolean blurredBack = true;
 PShader blurShader;
@@ -146,11 +152,8 @@ void draw() {
     {
         image(backSoft, 0, 0);
         
-        int numOns = 0;
-        for (MIDIBar m : midibars)
-        {
-            if (m.on) numOns++;
-        }
+        
+        
         backSharpAlpha = max(0, backSharpAlpha - numOns * 5);
         pushStyle();
         
@@ -205,5 +208,15 @@ void keyPressed() {
         } else {
             controlP5.show();
         }
+    }
+    else if (key == '1')
+    {
+        song = KISKECE;
+        println("song is KISKECE");
+    }
+    else if (key == '2')
+    {
+        song = NUTHSELL;
+        println("song is NUTHSELL");
     }
 }
