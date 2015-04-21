@@ -47,8 +47,9 @@ void render(PGraphics pg)
         // calculate links
         for (int i=0; i<midibars.size()-1; i++) 
         {
-            if (midibars.get(i).x < 300) continue;
-            if (midibars.get(i).before != null && midibars.get(i).after != null) continue;
+            if (midibars.get(i).x < 600) continue;
+            //if (midibars.get(i).before != null && midibars.get(i).after != null) continue;
+            if (midibars.get(i).after != null) continue;
         
             for (int k = 0; k < midibars.size(); k++)
             {
@@ -62,6 +63,7 @@ void render(PGraphics pg)
                 {
                     midibars.get(i).after = midibars.get(k);
                 }
+                /*
                 else if ( diff > - 50 && diff <  0 && midibars.get(i).after == null)
                 {
                     midibars.get(i).before = midibars.get(k);
@@ -70,11 +72,11 @@ void render(PGraphics pg)
                 {
                     midibars.get(i).before = midibars.get(k);
                 }
-                
+                */
                           
                 // thin mesh
                 strokeWeight(1);
-                stroke(255, 100);
+                stroke(0, 100);
                 if (abs(midibars.get(i).x - midibars.get(k).x) < 50 &&
                     abs(midibars.get(i).y - midibars.get(k).y) < 100 )
                 {
@@ -86,12 +88,13 @@ void render(PGraphics pg)
         
         // draw links
         strokeWeight(6);
-        stroke(255, 222);
+        stroke(255, 100);
         for (int i=0; i<midibars.size()-1; i++) 
         {
-            if (midibars.get(i).before != null)
-                line(midibars.get(i).x, midibars.get(i).y, midibars.get(i).z, 
-                    midibars.get(i).before.x, midibars.get(i).before.y, midibars.get(i).before.z); 
+            
+            //if (midibars.get(i).before != null)
+            //    line(midibars.get(i).x, midibars.get(i).y, midibars.get(i).z, 
+            //        midibars.get(i).before.x, midibars.get(i).before.y, midibars.get(i).before.z); 
             if (midibars.get(i).after != null)
                 line(midibars.get(i).x, midibars.get(i).y, midibars.get(i).z, 
                     midibars.get(i).after.x, midibars.get(i).after.y, midibars.get(i).after.z); 
