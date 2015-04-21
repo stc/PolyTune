@@ -9,7 +9,7 @@ void outputMIDINotes() {
       //  we have <note.channel> <note.pitch> <note.velocity>
       notesOpen[note.pitch] = note;
       note.noteOnFrame = frameNumber;
-      println("ON: " + note.label() + " at " + frameCount);
+     // println("ON: " + note.label() + " at " + frameCount);
       midibars.add(new MIDIBar(note));
     }
   }

@@ -1,4 +1,4 @@
-void render(PGraphics pg) 
+void render() 
 {
     
     boolean mesh = true;
@@ -10,19 +10,28 @@ void render(PGraphics pg)
         renderPeaks();
     }
    
-    
-    // lines
-    if (mesh)
+   // notes    
+
+    for (int i=0; i<midibars.size (); i++)
     {
-        strokeWeight(1);
-        stroke(255, 100);
-    } 
-    else
-    {
-        strokeWeight(5);
-        stroke(255, 222);
+        /*
+        if (checkForHarmonics(midibars.get(i)))
+        {
+            //println("removed " + midibars.get(i).note.label() );
+            //midibars.remove(midibars.get(i));
+            //midibars.get(i).isHarmonic = true;
+            //continue;
+        }
+        */
+        if ((midibars.get(i).x>width) || (midibars.get(i).x < - midibars.get(i).w * 4)) {
+            midibars.remove(midibars.get(i));
+            continue;
+        }
+        midibars.get(i).display();
     }
     
+    
+    // lines
     if(mesh)
     {
         float xLimit = 30;
@@ -88,6 +97,8 @@ void render(PGraphics pg)
     }
     else
     {
+        strokeWeight(5);
+        stroke(255, 222);
         for (int i=0; i<midibars.size()-1; i++) 
         {
             if (abs(midibars.get(i).x - midibars.get(i+1).x) > 100 ||
@@ -101,28 +112,7 @@ void render(PGraphics pg)
     }
         
         
-    // notes    
-    pg.beginDraw();
-    pg.clear();
     
-    for (int i=0; i<midibars.size (); i++)
-    {
-        /*
-        if (checkForHarmonics(midibars.get(i)))
-        {
-            //println("removed " + midibars.get(i).note.label() );
-            //midibars.remove(midibars.get(i));
-            //midibars.get(i).isHarmonic = true;
-            //continue;
-        }
-        */
-        if ((midibars.get(i).x>width) || (midibars.get(i).x < - midibars.get(i).w * 4)) {
-            midibars.remove(midibars.get(i));
-            continue;
-        }
-        midibars.get(i).display(pg);
-    }
-    pg.endDraw();
     
     
     

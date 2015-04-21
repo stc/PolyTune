@@ -2,7 +2,7 @@ class MIDIBar
 {
     boolean diagonal = true; // fretboard mapped or diagonal
     boolean runningNotes = false; // short notes slide faster
-    boolean colorByTimbre = false;
+    boolean colorByTimbre = true;
     float x, y, w, h, z;
     boolean on = true;
     boolean isHarmonic = false;
@@ -25,7 +25,7 @@ class MIDIBar
         neckStart = new PVector(820, 72);
         note = _note;
         h = keyHeight;
-        w = 0;
+        w = 10;
         timbreColor = peaknum * 4;
         //println("TIMBRE: " + peaknum);
         //println("note.pitch " + note.pitch);
@@ -48,8 +48,6 @@ class MIDIBar
         if (colorByTimbre) fill(255-timbreColor,155+timbreColor,155+timbreColor);
         else fill(255);
         
-        if (isHarmonic) fill(255, 0, 0);
-        
         noStroke();
         float ew = max(w*2, 20);
         ellipse(x, y, ew, ew);
@@ -62,26 +60,25 @@ class MIDIBar
         return y;
     }
 
-    void scroll(PGraphics pg) {
+    void scroll() {
     
         
-        pg.pushMatrix();
-        pg.ellipseMode(CENTER);
-        pg.noStroke();
-        pg.translate(x, y, z);
-        float size = max(w, 5);
-        if (colorByTimbre) pg.fill(255-timbreColor,155+timbreColor,155+timbreColor);
-        else pg.fill(255, map(x, 820, 200, 222, 0));
+        pushMatrix();
+        ellipseMode(CENTER);
+        noStroke();
+        translate(x, y, z);
+        float size = max(w-10, 5);
+        if (colorByTimbre) fill(255-timbreColor,155+timbreColor,155+timbreColor, map(x, 820, 200, 222, 0));
+        else fill(255, map(x, 820, 200, 222, 0));
  
         // for debugging bars to remove
-        if (isHarmonic) pg.fill(255, 0, 0, 255);
-
-        pg.ellipse(0, 0, size * 2, size* 2);
-        pg.fill(0, map(x, 820, 0, 222, 100) + note.amplitude);
-        if (isHarmonic) pg.fill(255, 0, 0, 255);
-        pg.ellipse(0, 0, size, size);
-        pg.popMatrix();
-
+        if (isHarmonic) fill(255, 0, 0, 255);
+        float bloat = map(x, 820, 200, 2, 1);
+        ellipse(0, 0, size * bloat, size * bloat);
+        fill(0, map(x, 820, 0, 256, 200) + note.amplitude);
+        ellipse(0, 0, size, size);
+        popMatrix();
+        
         if (runningNotes)
             x -= max(5 - w/20, 0.5);
         else
@@ -89,12 +86,12 @@ class MIDIBar
         z += note.amplitude * 0.01;
     }
 
-    void display(PGraphics pg) {
+    void display() {
         if (on) {
             grow();
         }
         if (!on) {
-            scroll(pg);
+            scroll();
         }
     }
 }
