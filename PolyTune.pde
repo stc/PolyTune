@@ -166,8 +166,14 @@ void draw() {
     else 
         image(back, 0, 0);
 
-
-    sampler.draw();
+    try
+    {
+        sampler.draw();
+    }
+    catch (Exception e)
+    {
+        println(e);
+    }
 }
 
 void stop() {
