@@ -20,6 +20,17 @@ void render()
             midibars.remove(midibars.get(i));
         }
     }
+    
+    if (autoPeak)
+    {
+        int fresh = 0;
+        for (int i=0; i<midibars.size (); i++)
+        {
+            if (frameCount - midibars.get(i).note.noteOnFrame < 20) fresh++;
+        }
+        if (fresh == 0) PEAK_THRESHOLD = max(3, PEAK_THRESHOLD-1);
+        if (fresh > 5) PEAK_THRESHOLD += 1;
+    }
 
     // notes 
     for (int i=0; i<midibars.size (); i++)

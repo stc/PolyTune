@@ -1,6 +1,6 @@
-/* //<>//
-
- 	Java implementation of realtime polyphonic pitch tracking
+import java.awt.Color; //<>//
+/*
+	Java implementation of realtime polyphonic pitch tracking
  	Based on Corban Brook's spectrotune code : https://github.com/corbanbrook/spectrotune
  
  	stc@binaura.net / 2015
@@ -9,14 +9,17 @@
  
  */
 
+boolean runFullscreen = true;
+boolean blurredBack = true;
+boolean autoPeak = false;
+
 int song = 1;
 final static int NUTHSELL = 0;
 final static int KISKECE = 1;
 
 int numOns = 0;
 
-boolean runFullscreen = false;
-boolean blurredBack = true;
+
 PShader blurShader;
 PGraphics pgBars, pgBlurPass1, pgBlurPass2;
 final int MAX_BLUR_ITERATIONS = 3;
@@ -110,6 +113,8 @@ boolean sketchFullScreen() {
 
 void setup() {
     size(1200, 800, P3D);
+    
+    
     minim = new Minim(this);
     controlP5 = new ControlP5(this);
     controlP5.hide();
@@ -147,7 +152,7 @@ void setup() {
 }
 
 void draw() {
-
+    background(0);
     if (blurredBack)
     {
         image(backSoft, 0, 0);
@@ -197,17 +202,21 @@ void initSound() {
 }
 
 void keyPressed() {
+    if (key == ESC) key = 0; // trap ESC so it doesn't quit
+    //println(keyCode);
     switch(keyCode) {
     case RIGHT:
+    case 34:
         PEAK_THRESHOLD += 1;
         break;
 
     case LEFT:
+    case 33:
         PEAK_THRESHOLD -= 1;
         break;
     }
 
-    if (key == 'x') {
+    if (key == 'x' || key == 46) {
         showUI = !showUI;
         if (!showUI) {
             controlP5.hide();
@@ -215,6 +224,7 @@ void keyPressed() {
             controlP5.show();
         }
     }
+    /*
     else if (key == '1')
     {
         song = KISKECE;
@@ -225,4 +235,5 @@ void keyPressed() {
         song = NUTHSELL;
         println("song is NUTHSELL");
     }
+    */
 }
