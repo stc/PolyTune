@@ -1,11 +1,12 @@
 import java.awt.Color; //<>//
 /*
-	Java implementation of realtime polyphonic pitch tracking
+	Java implementation of realtime polyphonic pitch tracking & custom visualization techniques
  	Based on Corban Brook's spectrotune code : https://github.com/corbanbrook/spectrotune
  
- 	stc@binaura.net / 2015
+ 	Agoston Nagy & Adam Somlai Fischer / 2015
  
- messing with visuals: adam@prezi.com 
+        analysis & midi: stc@binaura.net
+        messing with visuals: adam@prezi.com 
  
  */
 
@@ -104,7 +105,7 @@ public static final int HARMONIC = 3;
 public static final int SLOPEUP = 4;
 public static final int SLOPEDOWN = 5;
 
-ArrayList<MIDIBar> midibars; 
+ArrayList<GuitarBar> midibars; 
 
 boolean sketchFullScreen() {
     return runFullscreen;
@@ -125,7 +126,7 @@ void setup() {
     initSound();
     initGui();
 
-    midibars= new ArrayList<MIDIBar>();
+    midibars= new ArrayList<GuitarBar>();
 
     blurShader = loadShader( "shaders/blur.glsl" );
     blurShader.set( "blurSize", 9 );

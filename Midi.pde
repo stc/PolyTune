@@ -10,7 +10,7 @@ void outputMIDINotes() {
       notesOpen[note.pitch] = note;
       //note.noteOnFrame = frameNumber;
      // println("ON: " + note.label() + " at " + frameCount);
-      midibars.add(new MIDIBar(note));
+      midibars.add(new GuitarBar(note));
     }
   }
     
