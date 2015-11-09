@@ -1,5 +1,4 @@
-int freqToPitch(float f) 
-{
+int freqToPitch(float f) {
   int p = round(69.0 + 12.0 *(log(f/440.0) / log(2.0)));
   if ( p > 0 && p < 128 ) {
     return p;
@@ -8,25 +7,24 @@ int freqToPitch(float f)
   }
 }
 
-float pitchToFreq(int p) 
-{
+float pitchToFreq(int p) {
   return 440.0 * pow(2, (p - 69) / 12.0);
 }
 
 // Applies FFT bin weighting. x is the distance from a real semi-tone
 float binWeight(int type, float x) {
   switch(type) {
-    case DISCRETE:
-      return (x <= 0.2) ? 1.0 : 0.0;
-    case LINEAR:
-      return 1 - x;
-    case QUADRATIC:
-      return 1.0 - pow(x, 2);
-    case EXPONENTIAL: 
-      return pow(exp(1.0), 1.0 - x)/exp(1.0);
-    case UNIFORM:
-    default: 
-      return 1.0;
+  case DISCRETE:
+    return (x <= 0.2) ? 1.0 : 0.0;
+  case LINEAR:
+    return 1 - x;
+  case QUADRATIC:
+    return 1.0 - pow(x, 2);
+  case EXPONENTIAL: 
+    return pow(exp(1.0), 1.0 - x)/exp(1.0);
+  case UNIFORM:
+  default: 
+    return 1.0;
   }
 }
 

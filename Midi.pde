@@ -9,11 +9,11 @@ void outputMIDINotes() {
       //  we have <note.channel> <note.pitch> <note.velocity>
       notesOpen[note.pitch] = note;
       //note.noteOnFrame = frameNumber;
-     // println("ON: " + note.label() + " at " + frameCount);
+      // println("ON: " + note.label() + " at " + frameCount);
       midibars.add(new GuitarBar(note));
     }
   }
-    
+
   // send NoteOffs   
   for ( int i = 0; i < notesOpen.length; i++ ) {
     boolean isOpen = false;
@@ -25,15 +25,14 @@ void outputMIDINotes() {
       }
       if ( !isOpen ) {
         //println("OFF: " + notesOpen[i].pitch);
-       
-        for(int j=0; j<midibars.size(); j++){
-          if(midibars.get(j).note.pitch == notesOpen[i].pitch){
+
+        for (int j=0; j<midibars.size(); j++) {
+          if (midibars.get(j).note.pitch == notesOpen[i].pitch) {
             midibars.get(j).on = false;
             midibars.get(j).note.noteLength = frameNumber - midibars.get(j).note.noteOnFrame;
           }
         }
         notesOpen[i] = null;
-
       }
     }
   }

@@ -6,13 +6,13 @@ class Note {
 
   int octave;
   int semitone;
-  
+
   int channel;
   int pitch;
   int velocity;
   int noteLength = 1;
   int noteOnFrame = 0;
-  
+
   Note(float frequency, float amplitude) {
     this.noteOnFrame = frameCount;
     this.frequency = frequency;   
@@ -22,12 +22,12 @@ class Note {
     this.semitone = this.pitch % 12;
     this.channel = OCTAVE_CHANNEL[this.octave];
     this.velocity = round((amplitude - PEAK_THRESHOLD) / (255f + PEAK_THRESHOLD) * 128f);
-    
+
     if (this.velocity > 127 ) {
       this.velocity = 127;
     }
   }
-  
+
   public String label() {
     return semitones[this.semitone] + this.octave;
   }
