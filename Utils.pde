@@ -49,7 +49,12 @@ void precomputeOctaveRegions() {
     fftBinStart[j] = 0;
     fftBinEnd[j] = 0;
     for ( int k = 0; k < fftSize; k++) {
-      float freq = k / (float)fftBufferSize * input.sampleRate();
+      float freq;
+      if(testSound) {
+        freq = k / (float)fftBufferSize * player.sampleRate();
+      }else {
+        freq = k / (float)fftBufferSize * input.sampleRate();
+      }
       if ( freq >= octaveLowRange(j) && fftBinStart[j] == 0 ) {
         fftBinStart[j] = k;
       } else if ( freq > octaveHighRange(j) && fftBinEnd[j] == 0 ) {

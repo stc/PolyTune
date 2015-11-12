@@ -14,7 +14,8 @@ import ddf.minim.*;
 import ddf.minim.analysis.*;
 import controlP5.*;
 
-boolean runFullscreen = true;
+boolean testSound = true;
+
 boolean blurredBack = true;
 boolean autoPeak = false;
 
@@ -34,7 +35,10 @@ int keyboardEnd = 108;
 
 Minim minim;
 ControlP5 controlP5;
+
+AudioPlayer player;
 AudioInput input;
+
 Sampler sampler;
 Window window;
 Smooth smoother;
@@ -50,7 +54,6 @@ boolean showUI = false;
 float[] buffer = new float[fftBufferSize];
 float[] spectrum = new float[fftSize];
 int[] peak = new int[fftSize];
-
 float[][] pcp;
 
 Note[][] notes;
@@ -108,10 +111,15 @@ void setup() {
   window = new Window();
   smoother = new Smooth();
   rectMode(CORNERS);
+  if(testSound) {
+    player = minim.loadFile("pianoDrum.mp3", 1024);
+    player.loop();
+  }
   initSound();
   initGui();
   visuals = new Visuals();
   visuals.setupGuitarVisual();
+  
 }
 
 void draw() {
@@ -130,14 +138,24 @@ void stop() {
 }
 
 void initSound() {
-  input = minim.getLineIn();
-  fft = new FFT(fftBufferSize, input.sampleRate());
-  frames = round((float)input.sampleRate() / (float)bufferSize);
-  notes = new Note[frames][0];
-  pcp = new float[frames][12];
-  precomputeOctaveRegions();
-  frameNumber = -1;
-  input.addListener(sampler);
+  if(!testSound) {
+    input = minim.getLineIn();
+    fft = new FFT(fftBufferSize, input.sampleRate());
+    frames = round((float)input.sampleRate() / (float)bufferSize);
+    notes = new Note[frames][0];
+    pcp = new float[frames][12];
+    precomputeOctaveRegions();
+    frameNumber = -1;
+    input.addListener(sampler);
+  }else {
+    fft = new FFT(fftBufferSize, player.sampleRate());
+    frames = round((float)player.sampleRate() / (float)bufferSize);
+    notes = new Note[frames][0];
+    pcp = new float[frames][12];
+    precomputeOctaveRegions();
+    frameNumber = -1;
+    player.addListener(sampler);
+  }
 }
 
 void keyPressed() {

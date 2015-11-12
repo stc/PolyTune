@@ -9,14 +9,14 @@ class Sampler implements AudioListener {
 
   synchronized void samples(float[] sampleBuffer) {
     left = sampleBuffer;
-
     process();
   }
 
   synchronized void samples(float[] sampleBufferLeft, float[] sampleBufferRight) {  
     left = sampleBufferLeft;
     right = sampleBufferRight;
-
+    
+    //  We don't need monoism now
     // Apply balance to sample buffer storing in left mono buffer
     for ( int i = 0; i < bufferSize; i++ ) {
       int balanceValue = 0;
@@ -30,11 +30,12 @@ class Sampler implements AudioListener {
         left[i] = (left[i] + right[i]) / 2f;
       }
     }
-
+   
     process();
   }
 
   int counter;
+  
   void process() {
     notes = new Note[frames][0];
     pcp = new float[frames][12];
@@ -42,17 +43,15 @@ class Sampler implements AudioListener {
     //if ( frameNumber < frames -1 ) {
     // need to apply the window transform before we zeropad
     window.transform(left); // add window to samples
-    //fft.window(FFT.COSINE);
-
     arrayCopy(left, 0, buffer, 0, left.length);
     counter++;
     frameNumber = counter%frames;
-    analyze();
+    analyze(buffer);
     outputMIDINotes();
     //}
   }
 
-  void analyze() {
+  void analyze(float[] buffer) {
     fft.forward(buffer); // run fft on the buffer
 
     //smoother.apply(fft); // run the smoother on the fft spectra
@@ -66,8 +65,11 @@ class Sampler implements AudioListener {
     peaknum = 0;
 
     for (int k = 0; k < fftSize; k++) {
-      freq[k] = k / (float)fftBufferSize * input.sampleRate();
-
+      if(testSound) {
+        freq[k] = k / (float)fftBufferSize * player.sampleRate();
+      }else{
+        freq[k] = k / (float)fftBufferSize * input.sampleRate();
+      }
       // skip FFT bins that lay outside of octaves 0-9 
       if ( freq[k] < freqLowRange || freq[k] > freqHighRange ) { 
         continue;
@@ -144,8 +146,13 @@ class Sampler implements AudioListener {
         float interpolatedAmplitude = y0 - 0.25 * (ym1 - yp1) * p;
         float a = 0.5 * (ym1 - 2 * y0 + yp1);  
 
-        float interpolatedFrequency = (k + p) * input.sampleRate() / fftBufferSize;
-
+        float interpolatedFrequency;
+        if(testSound) {
+          interpolatedFrequency = (k + p) * player.sampleRate() / fftBufferSize;
+        }else {
+          interpolatedFrequency = (k + p) * input.sampleRate() / fftBufferSize;
+        }
+        
         if ( freqToPitch(interpolatedFrequency) != freqToPitch(freq[k]) ) {
           freq[k] = interpolatedFrequency;
           spectrum[k] = interpolatedAmplitude;
