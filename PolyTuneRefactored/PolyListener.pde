@@ -70,14 +70,23 @@ class PolyListener {
   public static final int SLOPEUP = 4;
   public static final int SLOPEDOWN = 5;
   
+  Vector<Visualizer> visualizers;
+  
   ArrayList<MIDIBar> midibars; 
   boolean autoPeak = false;
   int numOns = 0;
   String channelName = "";
   
   PolyListener(String _channelName) {
+    this(_channelName, new Vector<Visualizer>());
+  }
+
+  PolyListener(String _channelName, Vector<Visualizer> _visualizers) {
     controlP5.hide();
+    
     channelName = _channelName;
+    visualizers = _visualizers;
+    
     sampler = new Sampler(this, channelName);
     window = new Window();
     smoother = new Smooth();
@@ -223,6 +232,8 @@ class PolyListener {
   
   //  RENDER ---------------------------------------------------------------------------------------------------------------------------------------
   void render() {
+    VisualizerHelpers.visualizeNotes(channelName, visualizers, frameCount, notes[frameNumber]);
+
     if (showUI) {
       if(channelName.equals("right")) {
         pushMatrix();
