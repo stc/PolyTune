@@ -89,14 +89,7 @@ class PolyListener {
   
   void draw() {
     try {
-      if(channelName.equals("right")) {
-        pushMatrix();
-        translate(width/2,0);
-        sampler.draw();
-        popMatrix();
-      }else {
-        sampler.draw();
-      }
+      sampler.draw();
     } catch (Exception e) {
       println(e);
     }
@@ -231,9 +224,14 @@ class PolyListener {
   //  RENDER ---------------------------------------------------------------------------------------------------------------------------------------
   void render() {
     if (showUI) {
-      renderWindowCurve();
-      renderFFT();
-      renderPeaks();
+      if(channelName.equals("right")) {
+        pushMatrix();
+        translate(width/2,0);
+        renderUI();
+        popMatrix();
+      }else {
+        renderUI();
+      }
     }
   
     // clean old 
@@ -259,6 +257,12 @@ class PolyListener {
       midibars.get(i).display();
     }
   }
+  
+  void renderUI() {
+    renderWindowCurve();
+    renderFFT();
+    renderPeaks();
+  }    
   
   boolean checkForHarmonics(MIDIBar m) {
     Note h = m.note;
