@@ -70,14 +70,23 @@ class PolyListener {
   public static final int SLOPEUP = 4;
   public static final int SLOPEDOWN = 5;
   
+  Vector<Visualizer> visualizers;
+  
   ArrayList<MIDIBar> midibars; 
   boolean autoPeak = false;
   int numOns = 0;
   String channelName = "";
   
   PolyListener(String _channelName) {
+    this(_channelName, new Vector<Visualizer>());
+  }
+
+  PolyListener(String _channelName, Vector<Visualizer> _visualizers) {
     controlP5.hide();
+    
     channelName = _channelName;
+    visualizers = _visualizers;
+    
     sampler = new Sampler(this, channelName);
     window = new Window();
     smoother = new Smooth();
@@ -89,14 +98,7 @@ class PolyListener {
   
   void draw() {
     try {
-      if(channelName.equals("right")) {
-        pushMatrix();
-        translate(width/2,0);
-        sampler.draw();
-        popMatrix();
-      }else {
-        sampler.draw();
-      }
+      sampler.draw();
     } catch (Exception e) {
       println(e);
     }
@@ -230,10 +232,17 @@ class PolyListener {
   
   //  RENDER ---------------------------------------------------------------------------------------------------------------------------------------
   void render() {
+    VisualizerHelpers.visualizeNotes(channelName, visualizers, frameCount, notes[frameNumber]);
+
     if (showUI) {
-      renderWindowCurve();
-      renderFFT();
-      renderPeaks();
+      if(channelName.equals("right")) {
+        pushMatrix();
+        translate(width/2,0);
+        renderUI();
+        popMatrix();
+      }else {
+        renderUI();
+      }
     }
   
     // clean old 
@@ -259,6 +268,12 @@ class PolyListener {
       midibars.get(i).display();
     }
   }
+  
+  void renderUI() {
+    renderWindowCurve();
+    renderFFT();
+    renderPeaks();
+  }    
   
   boolean checkForHarmonics(MIDIBar m) {
     Note h = m.note;

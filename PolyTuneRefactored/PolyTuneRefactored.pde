@@ -28,8 +28,16 @@ void setup() {
       player = minim.loadFile("pianoDrum.mp3", 2048);
       player.loop();
     }
-  leftPolyListener = new PolyListener("left");
-  rightPolyListener = new PolyListener("right");
+    
+  Vector<Visualizer> visualizers;
+  
+  visualizers = new Vector<Visualizer>();
+  visualizers.add(new SoundMetricVisualizer(SoundMetricVisualizer.COLORED_BACKGROUND));
+  leftPolyListener = new PolyListener("left", visualizers);
+
+  visualizers = new Vector<Visualizer>();
+  visualizers.add(new SoundMetricVisualizer(SoundMetricVisualizer.GRAY_CIRCLES));
+  rightPolyListener = new PolyListener("right", visualizers);
 }
 
 void draw() {
