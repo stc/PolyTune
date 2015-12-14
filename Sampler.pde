@@ -1,24 +1,34 @@
 class Sampler implements AudioListener {
-  private float[] left;
-  private float[] right;
+  private float[] channel;
+  String selectChannel = "";
+  PolyListener p;
 
-  Sampler() {
-    left = null; 
-    right = null;
+  Sampler(PolyListener _p, String _selectChannel) {
+    channel = null;
+    selectChannel = _selectChannel;
+    p = _p;
   }
 
-  synchronized void samples(float[] sampleBuffer) {
-    left = sampleBuffer;
+  public synchronized void samples(float[] sampleBuffer) {
+    channel = sampleBuffer;
     process();
   }
 
-  synchronized void samples(float[] sampleBufferLeft, float[] sampleBufferRight) {  
-    left = sampleBufferLeft;
-    right = sampleBufferRight;
+  public synchronized void samples(float[] sampleBufferLeft, float[] sampleBufferRight) {  
+    if(selectChannel.equals("left")) {
+      channel = sampleBufferLeft;
+    }else if(selectChannel.equals("right")) {
+      channel = sampleBufferRight;
+    }else {
+      channel = null;
+      println("Error, Couldn't find channel name. Make sure to name it 'left' or 'right'" );
+    }
+    //right = sampleBufferRight;
     
     //  We don't need monoism now
+    /*
     // Apply balance to sample buffer storing in left mono buffer
-    for ( int i = 0; i < bufferSize; i++ ) {
+    for ( int i = 0; i < p.bufferSize; i++ ) {
       int balanceValue = 0;
       if ( balanceValue > 0 ) {
         float balancePercent = (100 - balanceValue) / 100.0; 
@@ -29,7 +39,7 @@ class Sampler implements AudioListener {
       } else {
         left[i] = (left[i] + right[i]) / 2f;
       }
-    }
+    }*/
    
     process();
   }
@@ -37,38 +47,38 @@ class Sampler implements AudioListener {
   int counter;
   
   void process() {
-    notes = new Note[frames][0];
-    pcp = new float[frames][12];
+    p.notes = new Note[p.frames][0];
+    p.pcp = new float[p.frames][12];
 
     //if ( frameNumber < frames -1 ) {
     // need to apply the window transform before we zeropad
-    window.transform(left); // add window to samples
-    arrayCopy(left, 0, buffer, 0, left.length);
+    p.window.transform(channel); // add window to samples
+    arrayCopy(channel, 0, p.buffer, 0, channel.length);
     counter++;
-    frameNumber = counter%frames;
-    analyze(buffer);
-    outputMIDINotes();
+    p.frameNumber = counter%p.frames;
+    analyze(p.buffer);
+    p.outputMIDINotes();
     //}
   }
 
   void analyze(float[] buffer) {
-    fft.forward(buffer); // run fft on the buffer
+    p.fft.forward(buffer); // run fft on the buffer
 
     //smoother.apply(fft); // run the smoother on the fft spectra
 
-    float[] binDistance = new float[fftSize];
-    float[] freq = new float[fftSize];
+    float[] binDistance = new float[p.fftSize];
+    float[] freq = new float[p.fftSize];
 
-    float freqLowRange = octaveLowRange(0);
-    float freqHighRange = octaveHighRange(7);
+    float freqLowRange = p.octaveLowRange(0);
+    float freqHighRange = p.octaveHighRange(7);
 
-    peaknum = 0;
+    p.peaknum = 0;
 
-    for (int k = 0; k < fftSize; k++) {
+    for (int k = 0; k < p.fftSize; k++) {
       if(testSound) {
-        freq[k] = k / (float)fftBufferSize * player.sampleRate();
+        freq[k] = k / (float)p.fftBufferSize * player.sampleRate();
       }else{
-        freq[k] = k / (float)fftBufferSize * input.sampleRate();
+        freq[k] = k / (float)p.fftBufferSize * p.input.sampleRate();
       }
       // skip FFT bins that lay outside of octaves 0-9 
       if ( freq[k] < freqLowRange || freq[k] > freqHighRange ) { 
@@ -76,17 +86,17 @@ class Sampler implements AudioListener {
       }
 
 
-      if (fft.getBand(k)>10) {
-        peaknum++;
+      if (p.fft.getBand(k)>10) {
+        p.peaknum++;
       }
       // Calculate fft bin distance and apply weighting to spectrum
-      float closestFreq = pitchToFreq(freqToPitch(freq[k])); // Rounds FFT frequency to closest semitone frequency
+      float closestFreq = p.pitchToFreq(p.freqToPitch(freq[k])); // Rounds FFT frequency to closest semitone frequency
       boolean filterFreq = false;
 
       // Filter out frequncies from disabled octaves    
       for ( int i = 0; i < 8; i ++ ) {
-        if ( !OCTAVE_TOGGLE[i] ) {
-          if ( closestFreq >= octaveLowRange(i) && closestFreq <= octaveHighRange(i) ) {
+        if ( !p.OCTAVE_TOGGLE[i] ) {
+          if ( closestFreq >= p.octaveLowRange(i) && closestFreq <= p.octaveHighRange(i) ) {
             filterFreq = true;
           }
         }
@@ -96,26 +106,26 @@ class Sampler implements AudioListener {
       if ( !filterFreq ) {
         binDistance[k] = 2 * abs((12 * log(freq[k]/440.0) / log(2)) - (12 * log(closestFreq/440.0) / log(2)));
 
-        spectrum[k] = fft.getBand(k) * binWeight(WEIGHT_TYPE, binDistance[k]);
+        p.spectrum[k] = p.fft.getBand(k) * p.binWeight(p.WEIGHT_TYPE, binDistance[k]);
 
 
-        if ( LINEAR_EQ_TOGGLE ) {
-          spectrum[k] *= (linearEQIntercept + k * linearEQSlope);
+        if ( p.LINEAR_EQ_TOGGLE ) {
+          p.spectrum[k] *= (p.linearEQIntercept + k * p.linearEQSlope);
         }
 
         // Sum PCP bins
-        pcp[frameNumber][freqToPitch(freq[k]) % 12] += pow(fft.getBand(k), 2) * binWeight(WEIGHT_TYPE, binDistance[k]);
+        p.pcp[p.frameNumber][p.freqToPitch(freq[k]) % 12] += pow(p.fft.getBand(k), 2) * p.binWeight(p.WEIGHT_TYPE, binDistance[k]);
       }
     }
-    normalizePCP();
+    p.normalizePCP();
 
-    if ( PCP_TOGGLE ) {
-      for ( int k = 0; k < fftSize; k++ ) {
+    if ( p.PCP_TOGGLE ) {
+      for ( int k = 0; k < p.fftSize; k++ ) {
         if ( freq[k] < freqLowRange || freq[k] > freqHighRange ) { 
           continue;
         }
 
-        spectrum[k] *= pcp[frameNumber][freqToPitch(freq[k]) % 12];
+        p.spectrum[k] *= p.pcp[p.frameNumber][p.freqToPitch(freq[k]) % 12];
       }
     }
 
@@ -127,41 +137,41 @@ class Sampler implements AudioListener {
     float[] foundLevel = new float[0];
 
     // find the peaks and valleys
-    for (int k = 1; k < fftSize -1; k++) {
+    for (int k = 1; k < p.fftSize -1; k++) {
       if ( freq[k] < freqLowRange || freq[k] > freqHighRange ) { 
         continue;
       }
 
-      sprev = spectrum[k-1];
-      scurr = spectrum[k];
-      snext = spectrum[k+1];
+      sprev = p.spectrum[k-1];
+      scurr = p.spectrum[k];
+      snext = p.spectrum[k+1];
 
-      if ( scurr > sprev && scurr > snext && (scurr > PEAK_THRESHOLD) ) { // peak
+      if ( scurr > sprev && scurr > snext && (scurr > p.PEAK_THRESHOLD) ) { // peak
         // Parobolic Peak Interpolation to estimate the real peak frequency and magnitude
         float ym1 = sprev;
         float y0 = scurr;
         float yp1 = snext;
 
-        float p = (yp1 - ym1) / (2 * ( 2 * y0 - yp1 - ym1));
-        float interpolatedAmplitude = y0 - 0.25 * (ym1 - yp1) * p;
+        float pp = (yp1 - ym1) / (2 * ( 2 * y0 - yp1 - ym1));
+        float interpolatedAmplitude = y0 - 0.25 * (ym1 - yp1) * pp;
         float a = 0.5 * (ym1 - 2 * y0 + yp1);  
 
         float interpolatedFrequency;
         if(testSound) {
-          interpolatedFrequency = (k + p) * player.sampleRate() / fftBufferSize;
+          interpolatedFrequency = (k + pp) * player.sampleRate() / p.fftBufferSize;
         }else {
-          interpolatedFrequency = (k + p) * input.sampleRate() / fftBufferSize;
+          interpolatedFrequency = (k + pp) * p.input.sampleRate() / p.fftBufferSize;
         }
         
-        if ( freqToPitch(interpolatedFrequency) != freqToPitch(freq[k]) ) {
+        if ( p.freqToPitch(interpolatedFrequency) != p.freqToPitch(freq[k]) ) {
           freq[k] = interpolatedFrequency;
-          spectrum[k] = interpolatedAmplitude;
+          p.spectrum[k] = interpolatedAmplitude;
         }
 
         boolean isHarmonic = false;
 
         // filter harmonics from peaks
-        if ( HARMONICS_TOGGLE ) {
+        if ( p.HARMONICS_TOGGLE ) {
           for ( int f = 0; f < foundPeak.length; f++ ) {
             //TODO: Cant remember why this is here
             if (foundPeak.length > 2 ) 
@@ -170,7 +180,7 @@ class Sampler implements AudioListener {
               break;
             }
             // If the current frequencies note has already peaked in a lower octave check to see if its level is lower probably a harmonic
-            if ( freqToPitch(freq[k]) % 12 == freqToPitch(foundPeak[f]) % 12 && spectrum[k] < foundLevel[f] ) 
+            if ( p.freqToPitch(freq[k]) % 12 == p.freqToPitch(foundPeak[f]) % 12 && p.spectrum[k] < foundLevel[f] ) 
             {
               isHarmonic = true;
               break;
@@ -180,19 +190,19 @@ class Sampler implements AudioListener {
 
         if ( isHarmonic ) 
         {        
-          peak[k] = HARMONIC;
+          p.peak[k] = p.HARMONIC;
           //println("dont add harmonic");
         } else 
         {
-          peak[k] = PEAK;
+          p.peak[k] = p.PEAK;
 
-          Note n = new Note(freq[k], spectrum[k]);
+          Note n = new Note(p, freq[k], p.spectrum[k]);
           n.noteOnFrame = frameCount;
-          notes[frameNumber] = (Note[])append(notes[frameNumber], n);
+          p.notes[p.frameNumber] = (Note[])append(p.notes[p.frameNumber], n);
 
           // Track Peaks and Levels in this pass so we can detect harmonics 
           foundPeak = append(foundPeak, freq[k]);
-          foundLevel = append(foundLevel, spectrum[k]);
+          foundLevel = append(foundLevel, p.spectrum[k]);
         }
       }
     }
@@ -200,6 +210,6 @@ class Sampler implements AudioListener {
 
   // draw routine needs to be synchronized otherwise it will run while buffers are being populated
   synchronized void draw() { 
-    render();
+    p.render();
   }
 }

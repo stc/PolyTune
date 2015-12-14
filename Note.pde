@@ -12,16 +12,16 @@ class Note {
   int velocity;
   int noteLength = 1;
   int noteOnFrame = 0;
-
-  Note(float frequency, float amplitude) {
+  
+  Note(PolyListener p,  float frequency, float amplitude) {
     this.noteOnFrame = frameCount;
     this.frequency = frequency;   
     this.amplitude = amplitude;
-    this.pitch = freqToPitch(frequency);
+    this.pitch = p.freqToPitch(frequency);
     this.octave = this.pitch / 12 - 1;
     this.semitone = this.pitch % 12;
-    this.channel = OCTAVE_CHANNEL[this.octave];
-    this.velocity = round((amplitude - PEAK_THRESHOLD) / (255f + PEAK_THRESHOLD) * 128f);
+    this.channel = p.OCTAVE_CHANNEL[this.octave];
+    this.velocity = round((amplitude - p.PEAK_THRESHOLD) / (255f + p.PEAK_THRESHOLD) * 128f);
 
     if (this.velocity > 127 ) {
       this.velocity = 127;

@@ -1,12 +1,10 @@
-/*
+/**
 
  Base class for handling and storing MIDI note on & MIDI note off messages
  
  */
 
-class MIDIBar
-{
-
+class MIDIBar {
   float x, y, w, h, z;
   boolean on = true;
   boolean isHarmonic = false;
